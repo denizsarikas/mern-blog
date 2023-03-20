@@ -1,33 +1,27 @@
-import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { UserContext } from "./UserContext";
+import {Link, useNavigate} from "react-router-dom";
+import {useContext, useEffect, useState} from "react";
+import {UserContext} from "./UserContext";
 
 export default function Header() {
-
-  const {setUserInfo, userInfo} = useContext(UserContext);
-
-  //const [username, setUsername] = useState(null);
-
+  const navigate = useNavigate();
+  const {setUserInfo,userInfo} = useContext(UserContext);
   useEffect(() => {
     fetch('http://localhost:4000/profile', {
       credentials: 'include',
     }).then(response => {
       response.json().then(userInfo => {
-        //setUsername(userInfo.username)
-        setUserInfo(userInfo.username)
-
-      })
-    })
-
+        setUserInfo(userInfo);
+      });
+    });
   }, []);
 
   function logout() {
-    fetch('http://localhost:4000/logout',{
+    fetch('http://localhost:4000/logout', {
       credentials: 'include',
       method: 'POST',
     });
-    //setUsername(null);
-    setUserInfo(null);
+    setUserInfo('');
+    navigate("/login");
   }
 
   const username = userInfo?.username;
@@ -38,9 +32,8 @@ export default function Header() {
       <nav>
         {username && (
           <>
-            <h7>Hello, {username}</h7>
-            <Link to="/create">Create new Post</Link>
-            <a onClick={logout}>Logout</a>
+            <Link to="/create">Create new post</Link>
+            <a onClick={logout}>Logout ({username})</a>
           </>
         )}
         {!username && (
@@ -51,5 +44,5 @@ export default function Header() {
         )}
       </nav>
     </header>
-  )
+  );
 }
